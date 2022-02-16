@@ -7,6 +7,7 @@ setup(
     description="Linear Maths Library",
     packages=find_packages(),
     include_package_data=True,
+    scripts=['calculations/ParallelLinear.py','datatypes/PLMatrix.py','datatypes/PLVector.py'],
     install_requires=[
         "numpy==1.22.2",
         "platformdirs==2.5.0",
