@@ -1,7 +1,8 @@
 from typing import Any
 import numpy as np
-from  plinear.datatypes.Matrix import Matrix
-import plinear.calculations.ParallelLinear as pl
+
+import ParallelLinear.calculations.ParallelLinear as pl
+from ParallelLinear.datatypes.PLMatrix import Matrix
 
 
 
