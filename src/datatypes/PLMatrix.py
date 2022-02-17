@@ -1,6 +1,6 @@
 from typing import Any
 import numpy as np
-import ParallelLinear.calculations.ParallelLinear as pl
+import calculations.ParallelLinear as pl
 
 
 
