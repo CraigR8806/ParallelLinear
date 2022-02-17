@@ -5,7 +5,7 @@ setup(
     version="0.0.1",
     author="Craig Ramage",
     description="Linear Maths Library",
-    packages=find_packages(),
+    packages=['calculations', 'datatypes'],
     include_package_data=True,
     scripts=['ParallelLinear.py','PLMatrix.py','PLVector.py'],
     include_dirs=['calculations', 'datatypes'],
