@@ -8,7 +8,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     scripts=['ParallelLinear.py','PLMatrix.py','PLVector.py'],
-    include_dirs=['calculations', 'datatypes']
+    include_dirs=['calculations', 'datatypes'],
     install_requires=[
         "numpy==1.22.2",
         "platformdirs==2.5.0",
