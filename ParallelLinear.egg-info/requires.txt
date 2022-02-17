@@ -1,4 +1,0 @@
-numpy==1.22.2
-platformdirs==2.5.0
-pyopencl==2022.1
-pytools==2022.1

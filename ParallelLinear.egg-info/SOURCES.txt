@@ -1,7 +1,0 @@
-README.md
-setup.py
-ParallelLinear.egg-info/PKG-INFO
-ParallelLinear.egg-info/SOURCES.txt
-ParallelLinear.egg-info/dependency_links.txt
-ParallelLinear.egg-info/requires.txt
-ParallelLinear.egg-info/top_level.txt
