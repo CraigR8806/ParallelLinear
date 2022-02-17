@@ -5,7 +5,7 @@ setup(
     version="0.0.1",
     author="Craig Ramage",
     description="Linear Maths Library",
-    packages=['parallellinear.calculations', 'paralllellinear.datatypes'],
+    packages=['parallellinear.calculations', 'parallellinear.datatypes'],
     include_package_data=True,
     install_requires=[
         "numpy==1.22.2",
