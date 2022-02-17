@@ -2,7 +2,7 @@ from typing import Any
 import numpy as np
 
 import parallellinear.calculations.ParallelLinear as pl
-from parallellinear.datatypes.PLMatrix import Matrix
+from parallellinear.datatypes.Matrix import Matrix
 
 
 
