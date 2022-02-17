@@ -1,8 +1,8 @@
 from typing import Any
 import numpy as np
 
-import calculations.ParallelLinear as pl
-from datatypes.PLMatrix import Matrix
+import parallellinear.calculations.ParallelLinear as pl
+from parallellinear.datatypes.PLMatrix import Matrix
 
 
 

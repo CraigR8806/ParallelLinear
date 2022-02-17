@@ -1,10 +1,6 @@
 [build-system]
 requires = [
-    "numpy==1.22.2",
-    "platformdirs==2.5.0",
-    "pyopencl==2022.1",
-    "pytools==2022.1",
-    "setuptools>=42",
+    "setuptools >= 42",
     "wheel"
 ]
 build-backend = "setuptools.build_meta"
