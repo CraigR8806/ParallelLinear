@@ -98,7 +98,7 @@ def loadPrograms():
 
 def loadCustomFunction(func_name, func):
     if func_name in programs:
-        raise ValueError(func_name + " already exists as a program name.  Unload it first, if trying to replace")
+        return
     
     func=func.replace("$i", "in[i]")
 
