@@ -21,16 +21,16 @@ class Vector(Matrix):
         return out 
 
     @classmethod
-    def vectorFromFlatLis(cls, data:list):
+    def vectorFromList(cls, data:list):
         return cls(data=np.ndarray(data).astype(np.float32))
 
     
     @classmethod
-    def zerosMatrix(cls, length:int):
+    def zerosVector(cls, length:int):
         return cls(data=np.zeros(length).astype(np.float32))
 
     @classmethod
-    def filledMatrixWithValue(cls, length:int, value):
+    def filledVectorWithValue(cls, length:int, value):
         return cls(data=np.empty(length).fill(value).astype(np.float32))
 
 
