@@ -28,7 +28,7 @@ class Matrix:
     def matrixFromFlatListGivenRowNumber(cls, rows:int, data:list):
         if len(data) % rows != 0:
                 raise ValueError("Matrix from list requires the following assertion to be true len(second parameter) % first parameter == 0")
-        return cls(rows=rows, data=np.ndarray(data).astype(np.float32))
+        return cls(rows=rows, data=np.array(data).astype(np.float32))
 
     
     @classmethod

@@ -22,7 +22,7 @@ class Vector(Matrix):
 
     @classmethod
     def vectorFromList(cls, data:list):
-        return cls(data=np.ndarray(data).astype(np.float32))
+        return cls(data=np.array(data).astype(np.float32))
 
     
     @classmethod
