@@ -6,11 +6,6 @@ import parallellinear.calculations.ParallelLinear as pl
 
 class Matrix:
 
-    rows=0
-    columns=0
-    data=None
-
-
     def __init__(self, rows:int, data:np.ndarray):
         self.rows = rows
         self.columns=len(data)/rows
