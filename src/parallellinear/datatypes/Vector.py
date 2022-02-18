@@ -8,9 +8,30 @@ from parallellinear.datatypes.Matrix import Matrix
 
 class Vector(Matrix):
 
-    def __init__(self, lengthOrVals, **kwargs):
-        super().__init__(1, lengthOrVals, **kwargs)
+    def __init__(self, data):
+        super().__init__(1, data)
            
+
+    @classmethod
+    def randomVector(cls, length:int, random_low=0, random_high=1):
+        out = cls(data=np.random.rand(length).astype(np.float32))
+        if random_low != 0 or random_high != 1:
+            out.scale(random_high-random_low)
+            out.addScaler(random_low)
+        return out 
+
+    @classmethod
+    def vectorFromFlatLis(cls, data:list):
+        return cls(data=np.ndarray(data).astype(np.float32))
+
+    
+    @classmethod
+    def zerosMatrix(cls, length:int):
+        return cls(data=np.zeros(length).astype(np.float32))
+
+    @classmethod
+    def filledMatrixWithValue(cls, length:int, value):
+        return cls(data=np.empty(length).fill(value).astype(np.float32))
 
 
 
@@ -52,13 +73,13 @@ class Vector(Matrix):
         if in_place:
             pl._addScalerInPlace(self, a)
         else:
-            return Vector(self.getNumberOfRows(), pl._addScaler(self, a))
+            return Vector(pl._addScaler(self, a))
 
     def subScaler(self, a, in_place = True) -> Any:
         if in_place:
             pl._subScalerInPlace(self, a)
         else:
-            return Vector(self.getNumberOfRows(), pl._subScaler(self, a))
+            return Vector(pl._subScaler(self, a))
 
     def scale(self, scaler, in_place = True) -> Any:
         if in_place:
