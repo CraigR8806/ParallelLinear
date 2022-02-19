@@ -27,7 +27,7 @@ def loadPrograms():
     }
     __kernel void element_wise_multiply(__global const float *a_g, __global const float *b_g, __global float *res_g){
         int gid = get_global_id(0);
-        res_g[id] = a_g[gid] * b_g[gid]
+        res_g[gid] = a_g[gid] * b_g[gid]
     }
     __kernel void add_scaler( __global float *a_g, const float scaler, __global float *res_g){
         int gid = get_global_id(0);
@@ -60,7 +60,7 @@ def loadPrograms():
     }
     __kernel void element_wise_multiply_inplace(__global float *a_g, __global const float *b_g){
         int gid = get_global_id(0);
-        a_g[id] = a_g[gid] * b_g[gid]
+        a_g[gid] = a_g[gid] * b_g[gid]
     }
     __kernel void add_scaler_inplace( __global float *a_g, const float scaler){
         int gid = get_global_id(0);
