@@ -112,4 +112,4 @@ class Vector(Matrix):
         if in_place:
             pl._elementWiseMultiplyInPlace(self, a)
         else:
-            return Vector(self.rows, pl._elementWiseMultiply(self, a))
+            return Vector(pl._elementWiseMultiply(self, a))
