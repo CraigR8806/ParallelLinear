@@ -125,7 +125,7 @@ class Matrix:
             self.columns = self.rows
             self.rows = tmp
         else:
-            return Matrix.matrixFromFlatListGivenRowNumber(self.rows, bufferList)
+            return Matrix.matrixFromFlatListGivenRowNumber(self.columns, bufferList)
 
     def multiply(self, a):
         return Matrix(self.rows, pl._multiply(self, a))
