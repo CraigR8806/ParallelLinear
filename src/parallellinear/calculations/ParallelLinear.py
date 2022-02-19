@@ -25,6 +25,10 @@ def loadPrograms():
         int gid = get_global_id(0);
         res_g[gid] = a_g[gid] - b_g[gid];
     }
+    __kernel void element_wise_multiply(__global const float *a_g, __global const float *b_g, __global float *res_g){
+        int gid = get_global_id(0);
+        res_g[id] = a_g[gid] * b_g[gid]
+    }
     __kernel void add_scaler( __global float *a_g, const float scaler, __global float *res_g){
         int gid = get_global_id(0);
         res_g[gid] = a_g[gid] + scaler;
@@ -53,6 +57,10 @@ def loadPrograms():
     __kernel void sub_inplace( __global float *a_g, __global const float *b_g){
         int gid = get_global_id(0);
         a_g[gid] = a_g[gid] - b_g[gid];
+    }
+    __kernel void element_wise_multiply_inplace(__global float *a_g, __global const float *b_g){
+        int gid = get_global_id(0);
+        a_g[id] = a_g[gid] * b_g[gid]
     }
     __kernel void add_scaler_inplace( __global float *a_g, const float scaler){
         int gid = get_global_id(0);
@@ -86,6 +94,7 @@ def loadPrograms():
 
     programs['add'] = prg.add
     programs['subtract'] = prg.sub
+    programs['element_wise_multiply'] = prg.element_wise_multiply
     programs['add_scaler'] = prg.add_scaler
     programs['sub_scaler'] = prg.sub_scaler
     programs['scaler_sub_from'] = prg.scaler_sub_from
@@ -93,6 +102,7 @@ def loadPrograms():
     programs['descale'] = prg.descale
     programs['add_inplace'] = prg.add_inplace
     programs['subtract_inplace'] = prg.sub_inplace
+    programs['element_wise_multiply_inplace'] = prg.element_wise_multiply_inplace
     programs['add_scaler_inplace'] = prg.add_scaler_inplace
     programs['sub_scaler_inplace'] = prg.sub_scaler_inplace
     programs['scaler_sub_from_inplace'] = prg.scaler_sub_from_inplace
@@ -157,6 +167,18 @@ def _subInPlace(a, b):
     programs['subtract_inplace'](queue, a.getData().shape, None, a_g, b_g)
     cl.enqueue_copy(queue, a.getData(), a_g)
 
+def _elementWiseMultiplyInPlace(a, b):
+    if a.getNumberOfRows() != b.getNumberOfRows() or a.getNumberOfColumns() != b.getNumberOfColumns():
+        raise ValueError("When subtracting two Matricies, they need to be same dimensions")
+
+    queue = cl.CommandQueue(ctx)
+
+    mf = cl.mem_flags
+    a_g = cl.Buffer(ctx, mf.READ_WRITE | mf.COPY_HOST_PTR, hostbuf=a.getData().astype(np.float32))
+    b_g = cl.Buffer(ctx, mf.READ_ONLY | mf.COPY_HOST_PTR, hostbuf=b.getData().astype(np.float32))
+
+    programs['element_wise_multiply_inplace'](queue, a.getData().shape, None, a_g, b_g)
+    cl.enqueue_copy(queue, a.getData(), a_g)
 
 def _addScalerInPlace(a, scaler):
 
@@ -240,6 +262,23 @@ def _sub(a, b):
     r_g = cl.Buffer(ctx, mf.WRITE_ONLY | mf.COPY_HOST_PTR, hostbuf=r_np)
 
     programs['subtract'](queue, a.getData().shape, None, a_g, b_g, r_g)
+    cl.enqueue_copy(queue, r_np, r_g)
+    return r_np
+
+def _elementWiseMultiply(a, b):
+    if a.getNumberOfRows() != b.getNumberOfRows() or a.getNumberOfColumns() != b.getNumberOfColumns():
+        raise ValueError("When adding two Matricies, they need to be same dimensions")
+
+    queue = cl.CommandQueue(ctx)
+
+    r_np=np.empty(int(a.getNumberOfRows() * a.getNumberOfColumns())).astype(np.float32)
+
+    mf = cl.mem_flags
+    a_g = cl.Buffer(ctx, mf.READ_ONLY | mf.COPY_HOST_PTR, hostbuf=a.getData().astype(np.float32))
+    b_g = cl.Buffer(ctx, mf.READ_ONLY | mf.COPY_HOST_PTR, hostbuf=b.getData().astype(np.float32))
+    r_g = cl.Buffer(ctx, mf.WRITE_ONLY | mf.COPY_HOST_PTR, hostbuf=r_np)
+
+    programs['element_wise_multiply'](queue, a.getData().shape, None, a_g, b_g, r_g)
     cl.enqueue_copy(queue, r_np, r_g)
     return r_np
 

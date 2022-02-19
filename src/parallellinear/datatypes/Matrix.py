@@ -12,7 +12,7 @@ class Matrix:
         self.data=data
 
     @classmethod
-    def randomMatrix(cls, rows:int, columns:int, random_low=0, random_high=1):
+    def random(cls, rows:int, columns:int, random_low=0, random_high=1):
         out = cls(rows=rows, data=np.random.rand(rows*columns).astype(np.float32))
         if random_low != 0 or random_high != 1:
             out.scale(random_high-random_low)
@@ -20,18 +20,18 @@ class Matrix:
         return out 
 
     @classmethod
-    def matrixFromFlatListGivenRowNumber(cls, rows:int, data:list):
+    def fromFlatListGivenRowNumber(cls, rows:int, data:list):
         if len(data) % rows != 0:
                 raise ValueError("Matrix from list requires the following assertion to be true len(second parameter) % first parameter == 0")
         return cls(rows=rows, data=np.array(data).astype(np.float32))
 
     
     @classmethod
-    def zerosMatrix(cls, rows, columns):
+    def zeros(cls, rows, columns):
         return cls(rows=rows, data=np.zeros(rows*columns).astype(np.float32))
 
     @classmethod
-    def filledMatrixWithValue(cls, rows:int, columns:int, value):
+    def filledWithValue(cls, rows:int, columns:int, value):
         return cls(rows=rows, data=np.ndarray(rows*columns).fill(value).astype(np.float32))
 
 
@@ -135,6 +135,12 @@ class Matrix:
             pl._applyCustomFunctionInPlace(self, func_name)
         else:
             return Matrix(self.rows, pl._applyCustomFunction(self, func_name))
+
+    def elementWiseMultiply(self, a, in_place = True):
+        if in_place:
+            pl._elementWiseMultiplyInPlace(self, a)
+        else:
+            return Matrix(self.rows, pl._elementWiseMultiply(self, a))
             
         
 

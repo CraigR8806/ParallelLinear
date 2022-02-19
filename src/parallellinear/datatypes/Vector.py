@@ -13,7 +13,7 @@ class Vector(Matrix):
            
 
     @classmethod
-    def randomVector(cls, length:int, random_low=0, random_high=1):
+    def random(cls, length:int, random_low=0, random_high=1):
         out = cls(data=np.random.rand(length).astype(np.float32))
         if random_low != 0 or random_high != 1:
             out.scale(random_high-random_low)
@@ -21,16 +21,16 @@ class Vector(Matrix):
         return out 
 
     @classmethod
-    def vectorFromList(cls, data:list):
+    def fromList(cls, data:list):
         return cls(data=np.array(data).astype(np.float32))
 
     
     @classmethod
-    def zerosVector(cls, length:int):
+    def zeros(cls, length:int):
         return cls(data=np.zeros(length).astype(np.float32))
 
     @classmethod
-    def filledVectorWithValue(cls, length:int, value):
+    def filledWithValue(cls, length:int, value):
         return cls(data=np.empty(length).fill(value).astype(np.float32))
 
 
@@ -107,3 +107,9 @@ class Vector(Matrix):
 
     def magnitude(a):
         return np.sqrt(np.sum((lambda x:np.square(x))(a)))
+
+    def elementWiseMultiply(self, a, in_place = True):
+        if in_place:
+            pl._elementWiseMultiplyInPlace(self, a)
+        else:
+            return Vector(self.rows, pl._elementWiseMultiply(self, a))
