@@ -154,7 +154,7 @@ def _subInPlace(a, b):
     a_g = cl.Buffer(ctx, mf.READ_WRITE | mf.COPY_HOST_PTR, hostbuf=a.getData().astype(np.float32))
     b_g = cl.Buffer(ctx, mf.READ_ONLY | mf.COPY_HOST_PTR, hostbuf=b.getData().astype(np.float32))
 
-    programs['sub_inplace'](queue, a.getData().shape, None, a_g, b_g)
+    programs['subtract_inplace'](queue, a.getData().shape, None, a_g, b_g)
     cl.enqueue_copy(queue, a.getData(), a_g)
 
 
@@ -239,7 +239,7 @@ def _sub(a, b):
     b_g = cl.Buffer(ctx, mf.READ_ONLY | mf.COPY_HOST_PTR, hostbuf=b.getData().astype(np.float32))
     r_g = cl.Buffer(ctx, mf.WRITE_ONLY | mf.COPY_HOST_PTR, hostbuf=r_np)
 
-    programs['sub'](queue, a.getData().shape, None, a_g, b_g, r_g)
+    programs['subtract'](queue, a.getData().shape, None, a_g, b_g, r_g)
     cl.enqueue_copy(queue, r_np, r_g)
     return r_np
 
