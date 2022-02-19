@@ -81,6 +81,12 @@ class Vector(Matrix):
         else:
             return Vector(pl._subScaler(self, a))
 
+    def subScalerFrom(self, a, in_place = True) -> Any:
+        if in_place:
+            pl._subScalerFromInPlace(self, a)
+        else:
+            return Vector(pl._subScalerFrom(self, a))
+
     def scale(self, scaler, in_place = True) -> Any:
         if in_place:
             pl._scaleInPlace(self, scaler)

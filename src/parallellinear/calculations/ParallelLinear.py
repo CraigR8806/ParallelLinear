@@ -33,6 +33,10 @@ def loadPrograms():
         int gid = get_global_id(0);
         res_g[gid] = a_g[gid] - scaler;
     }
+    __kernel void scaler_sub_from( __global float *a_g, const float scaler, __global float *res_g){
+        int gid = get_global_id(0);
+        res_g[gid] = scaler - a_g[gid];
+    }
     __kernel void scale( __global const float *a_g, const float scaler, __global float *res_g){
         int gid = get_global_id(0);
         res_g[gid] = a_g[gid] * scaler;
@@ -58,6 +62,10 @@ def loadPrograms():
         int gid = get_global_id(0);
         a_g[gid] = a_g[gid] - scaler;
     }
+    __kernel void scaler_sub_from_inplace( __global float *a_g, const float scaler){
+        int gid = get_global_id(0);
+        a_g[gid] = scaler - a_g[gid];
+    }
     __kernel void scale_inplace( __global float *a_g, const float scaler){
         int gid = get_global_id(0);
         a_g[gid] = a_g[gid] * scaler;
@@ -80,12 +88,14 @@ def loadPrograms():
     programs['subtract'] = prg.sub
     programs['add_scaler'] = prg.add_scaler
     programs['sub_scaler'] = prg.sub_scaler
+    programs['scaler_sub_from'] = prg.scaler_sub_from
     programs['scale'] = prg.scale
     programs['descale'] = prg.descale
     programs['add_inplace'] = prg.add_inplace
     programs['subtract_inplace'] = prg.sub_inplace
     programs['add_scaler_inplace'] = prg.add_scaler_inplace
     programs['sub_scaler_inplace'] = prg.sub_scaler_inplace
+    programs['scaler_sub_from_inplace'] = prg.scaler_sub_from_inplace
     programs['scale_inplace'] = prg.scale_inplace
     programs['descale_inplace'] = prg.descale_inplace
     programs['multiply'] = prg.multiply
@@ -147,6 +157,7 @@ def _subInPlace(a, b):
     programs['sub_inplace'](queue, a.getData().shape, None, a_g, b_g)
     cl.enqueue_copy(queue, a.getData(), a_g)
 
+
 def _addScalerInPlace(a, scaler):
 
     queue = cl.CommandQueue(ctx)
@@ -157,6 +168,7 @@ def _addScalerInPlace(a, scaler):
     programs['add_scaler_inplace'](queue, a.getData().shape, None, a_g, np.float32(scaler))
     cl.enqueue_copy(queue, a.getData(), a_g)
 
+
 def _subScalerInPlace(a, scaler):
 
     queue = cl.CommandQueue(ctx)
@@ -165,6 +177,16 @@ def _subScalerInPlace(a, scaler):
     a_g = cl.Buffer(ctx, mf.READ_WRITE | mf.COPY_HOST_PTR, hostbuf=a.getData().astype(np.float32))
 
     programs['sub_scaler_inplace'](queue, a.getData().shape, None, a_g, np.float32(scaler))
+    cl.enqueue_copy(queue, a.getData(), a_g)
+
+def _subScalerFromInPlace(a, scaler):
+
+    queue = cl.CommandQueue(ctx)
+
+    mf = cl.mem_flags
+    a_g = cl.Buffer(ctx, mf.READ_WRITE | mf.COPY_HOST_PTR, hostbuf=a.getData().astype(np.float32))
+
+    programs['scaler_sub_from_inplace'](queue, a.getData().shape, None, a_g, np.float32(scaler))
     cl.enqueue_copy(queue, a.getData(), a_g)
 
 def _scaleInPlace(a, scaler):
@@ -248,6 +270,21 @@ def _subScaler(a, scaler):
     programs['sub_scaler'](queue, a.getData().shape, None, a_g, np.float32(scaler), r_g)
     cl.enqueue_copy(queue, r_np, r_g)
     return r_np
+
+def _subScalerFrom(a, scaler):
+
+    queue = cl.CommandQueue(ctx)
+
+    r_np=np.empty(int(a.getNumberOfRows() * a.getNumberOfColumns())).astype(np.float32)
+
+    mf = cl.mem_flags
+    a_g = cl.Buffer(ctx, mf.READ_ONLY | mf.COPY_HOST_PTR, hostbuf=a.getData().astype(np.float32))
+    r_g = cl.Buffer(ctx, mf.WRITE_ONLY | mf.COPY_HOST_PTR, hostbuf=r_np)
+
+    programs['scaler_sub_from'](queue, a.getData().shape, None, a_g, np.float32(scaler), r_g)
+    cl.enqueue_copy(queue, r_np, r_g)
+    return r_np
+
 
 def _scale(a, scaler):
 
