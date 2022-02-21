@@ -45,7 +45,7 @@ class Vector(Matrix):
         return str(self.data)
 
     def exportToList(self):
-        return self.data.tolist()[0]
+        return self.data.tolist()
 
     def getData(self):
         return self.data

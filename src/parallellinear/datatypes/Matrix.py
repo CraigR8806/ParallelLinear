@@ -62,7 +62,7 @@ class Matrix:
         return out
     
     def exportToList(self):
-        return (lambda y:[x for a in y for x in (lambda z:z)(a)] if type(y) is list else [y])(self.data)
+        return self.data.tolist()
 
 
     def add(self, a, in_place = True) -> Any:
