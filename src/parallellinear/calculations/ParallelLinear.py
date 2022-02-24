@@ -2,18 +2,21 @@ import pyopencl as cl
 import numpy as np
 import os
 
-os.environ["PYOPENCL_CTX"] = ":2"
+
 
 ctx = cl.create_some_context()
+queue = cl.CommandQueue(ctx)
 programs = {}
 baseProgramNames = []
+
 
 baseProgramsLoaded = False
 
 
-def loadPrograms():
+def loadPrograms(pyopencl_ctx=":2"):
     if globals()['baseProgramsLoaded']:
         return
+    os.environ["PYOPENCL_CTX"] = pyopencl_ctx
     currentPrograms=list(programs.keys())
 
     prg = cl.Program(ctx, """
@@ -145,8 +148,6 @@ def _addInPlace(a, b):
     if a.getNumberOfRows() != b.getNumberOfRows() or a.getNumberOfColumns() != b.getNumberOfColumns():
         raise ValueError("When adding two Matricies, they need to be same dimensions")
 
-    queue = cl.CommandQueue(ctx)
-
     mf = cl.mem_flags
     a_g = cl.Buffer(ctx, mf.READ_WRITE | mf.COPY_HOST_PTR, hostbuf=a.getData().astype(np.float32))
     b_g = cl.Buffer(ctx, mf.READ_ONLY | mf.COPY_HOST_PTR, hostbuf=b.getData().astype(np.float32))
@@ -157,8 +158,6 @@ def _addInPlace(a, b):
 def _subInPlace(a, b):
     if a.getNumberOfRows() != b.getNumberOfRows() or a.getNumberOfColumns() != b.getNumberOfColumns():
         raise ValueError("When subtracting two Matricies, they need to be same dimensions")
-
-    queue = cl.CommandQueue(ctx)
 
     mf = cl.mem_flags
     a_g = cl.Buffer(ctx, mf.READ_WRITE | mf.COPY_HOST_PTR, hostbuf=a.getData().astype(np.float32))
@@ -171,8 +170,6 @@ def _elementWiseMultiplyInPlace(a, b):
     if a.getNumberOfRows() != b.getNumberOfRows() or a.getNumberOfColumns() != b.getNumberOfColumns():
         raise ValueError("When subtracting two Matricies, they need to be same dimensions")
 
-    queue = cl.CommandQueue(ctx)
-
     mf = cl.mem_flags
     a_g = cl.Buffer(ctx, mf.READ_WRITE | mf.COPY_HOST_PTR, hostbuf=a.getData().astype(np.float32))
     b_g = cl.Buffer(ctx, mf.READ_ONLY | mf.COPY_HOST_PTR, hostbuf=b.getData().astype(np.float32))
@@ -181,8 +178,6 @@ def _elementWiseMultiplyInPlace(a, b):
     cl.enqueue_copy(queue, a.getData(), a_g)
 
 def _addScalerInPlace(a, scaler):
-
-    queue = cl.CommandQueue(ctx)
 
     mf = cl.mem_flags
     a_g = cl.Buffer(ctx, mf.READ_WRITE | mf.COPY_HOST_PTR, hostbuf=a.getData().astype(np.float32))
@@ -193,8 +188,6 @@ def _addScalerInPlace(a, scaler):
 
 def _subScalerInPlace(a, scaler):
 
-    queue = cl.CommandQueue(ctx)
-
     mf = cl.mem_flags
     a_g = cl.Buffer(ctx, mf.READ_WRITE | mf.COPY_HOST_PTR, hostbuf=a.getData().astype(np.float32))
 
@@ -202,8 +195,6 @@ def _subScalerInPlace(a, scaler):
     cl.enqueue_copy(queue, a.getData(), a_g)
 
 def _subScalerFromInPlace(a, scaler):
-
-    queue = cl.CommandQueue(ctx)
 
     mf = cl.mem_flags
     a_g = cl.Buffer(ctx, mf.READ_WRITE | mf.COPY_HOST_PTR, hostbuf=a.getData().astype(np.float32))
@@ -213,8 +204,6 @@ def _subScalerFromInPlace(a, scaler):
 
 def _scaleInPlace(a, scaler):
 
-    queue = cl.CommandQueue(ctx)
-
     mf = cl.mem_flags
     a_g = cl.Buffer(ctx, mf.READ_WRITE | mf.COPY_HOST_PTR, hostbuf=a.getData().astype(np.float32))
 
@@ -222,8 +211,6 @@ def _scaleInPlace(a, scaler):
     cl.enqueue_copy(queue, a.getData(), a_g)
 
 def _descaleInPlace(a, scaler):
-
-    queue = cl.CommandQueue(ctx)
 
     mf = cl.mem_flags
     a_g = cl.Buffer(ctx, mf.READ_WRITE | mf.COPY_HOST_PTR, hostbuf=a.getData().astype(np.float32))
@@ -234,8 +221,6 @@ def _descaleInPlace(a, scaler):
 def _add(a, b):
     if a.getNumberOfRows() != b.getNumberOfRows() or a.getNumberOfColumns() != b.getNumberOfColumns():
         raise ValueError("When adding two Matricies, they need to be same dimensions")
-
-    queue = cl.CommandQueue(ctx)
 
     r_np=np.empty(int(a.getNumberOfRows() * a.getNumberOfColumns())).astype(np.float32)
 
@@ -252,8 +237,6 @@ def _sub(a, b):
     if a.getNumberOfRows() != b.getNumberOfRows() or a.getNumberOfColumns() != b.getNumberOfColumns():
         raise ValueError("When adding two Matricies, they need to be same dimensions")
 
-    queue = cl.CommandQueue(ctx)
-
     r_np=np.empty(int(a.getNumberOfRows() * a.getNumberOfColumns())).astype(np.float32)
 
     mf = cl.mem_flags
@@ -269,8 +252,6 @@ def _elementWiseMultiply(a, b):
     if a.getNumberOfRows() != b.getNumberOfRows() or a.getNumberOfColumns() != b.getNumberOfColumns():
         raise ValueError("When adding two Matricies, they need to be same dimensions")
 
-    queue = cl.CommandQueue(ctx)
-
     r_np=np.empty(int(a.getNumberOfRows() * a.getNumberOfColumns())).astype(np.float32)
 
     mf = cl.mem_flags
@@ -284,8 +265,6 @@ def _elementWiseMultiply(a, b):
 
 def _addScaler(a, scaler):
 
-    queue = cl.CommandQueue(ctx)
-
     r_np=np.empty(int(a.getNumberOfRows() * a.getNumberOfColumns())).astype(np.float32)
 
     mf = cl.mem_flags
@@ -298,8 +277,6 @@ def _addScaler(a, scaler):
 
 def _subScaler(a, scaler):
 
-    queue = cl.CommandQueue(ctx)
-
     r_np=np.empty(int(a.getNumberOfRows() * a.getNumberOfColumns())).astype(np.float32)
 
     mf = cl.mem_flags
@@ -311,8 +288,6 @@ def _subScaler(a, scaler):
     return r_np
 
 def _subScalerFrom(a, scaler):
-
-    queue = cl.CommandQueue(ctx)
 
     r_np=np.empty(int(a.getNumberOfRows() * a.getNumberOfColumns())).astype(np.float32)
 
@@ -327,8 +302,6 @@ def _subScalerFrom(a, scaler):
 
 def _scale(a, scaler):
 
-    queue = cl.CommandQueue(ctx)
-
     r_np=np.empty(int(a.getNumberOfRows() * a.getNumberOfColumns())).astype(np.float32)
 
     mf = cl.mem_flags
@@ -340,8 +313,6 @@ def _scale(a, scaler):
     return r_np
 
 def _descale(a, scaler):
-
-    queue = cl.CommandQueue(ctx)
 
     r_np=np.empty(int(a.getNumberOfRows() * a.getNumberOfColumns())).astype(np.float32)
 
@@ -357,8 +328,6 @@ def _multiply(a, b):
     if a.getNumberOfColumns() != b.getNumberOfRows():
         raise ValueError("When muliplying two matricies, the m*n n*p rule needs to be followed...")
 
-    queue = cl.CommandQueue(ctx)
-
     res_np = np.empty(int(a.getNumberOfRows() * b.getNumberOfColumns()), dtype=np.float32)
 
     mf = cl.mem_flags
@@ -373,8 +342,6 @@ def _multiply(a, b):
 
 def _applyCustomFunctionInPlace(a, func_name):
 
-    queue = cl.CommandQueue(ctx)
-
     mf = cl.mem_flags
     a_g = cl.Buffer(ctx, mf.READ_WRITE | mf.COPY_HOST_PTR, hostbuf=a.getData())
 
@@ -383,8 +350,6 @@ def _applyCustomFunctionInPlace(a, func_name):
     cl.enqueue_copy(queue, a.getData(), a_g)
 
 def _applyCustomFunction(a, func_name):
-
-    queue = cl.CommandQueue(ctx)
 
     r_np=np.empty(a.getNumberOfRows() * a.getNumberOfColumns()).astype(np.float32)
 
