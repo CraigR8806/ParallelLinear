@@ -16,7 +16,7 @@ baseProgramsLoaded = False
 def loadPrograms(pyopencl_ctx=":2"):
     if globals()['baseProgramsLoaded']:
         return
-    os.environ["PYOPENCL_CTX"] = pyopencl_ctx
+    #os.environ["PYOPENCL_CTX"] = pyopencl_ctx
     globals()['ctx'] = cl.create_some_context()
     globals()['queue'] = cl.CommandQueue(ctx)
     currentPrograms=list(programs.keys())
