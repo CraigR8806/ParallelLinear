@@ -1,38 +1,58 @@
 from typing import Any
 import numpy as np
-import parallellinear.calculations.ParallelLinear as pl
+from parallellinear.calculations.CalculationsManager import CalculationsManager
+from parallellinear.calculations.NumpyLinear import NumpyLinear
+
 
 
 
 class Matrix:
 
-    def __init__(self, rows:int, data:np.ndarray):
+    CALCULATIONS_MANAGER=CalculationsManager(NumpyLinear.getLinearCalculator(), np.float32)
+
+    def __init__(self, rows:int, data:np.ndarray, calcManager=None):
         self.rows = rows
-        self.columns=len(data)/rows
+        self.columns=int(len(data)/rows)
         self.data=data
+        if calcManager==None:
+            self.calcManager = Matrix.CALCULATIONS_MANAGER
+        else:
+            self.calcManager = calcManager
 
     @classmethod
-    def random(cls, rows:int, columns:int, random_low=0, random_high=1):
-        out = cls(rows=rows, data=np.random.rand(rows*columns).astype(np.float32))
+    def setCalculationsManager(cls, calculationsManager:CalculationsManager):
+        Matrix.CALCULATIONS_MANAGER = calculationsManager
+
+    @classmethod
+    def random(cls, rows:int, columns:int, calcManager=None, random_low=0, random_high=1):
+        if calcManager==None:
+            calcManager = Matrix.CALCULATIONS_MANAGER
+        out = cls(rows=rows, data=np.random.rand(rows*columns).astype(calcManager.getPrecision()), calcManager=calcManager)
         if random_low != 0 or random_high != 1:
             out.scale(random_high-random_low)
             out.addScaler(random_low)
         return out 
 
     @classmethod
-    def fromFlatListGivenRowNumber(cls, rows:int, data:list):
+    def fromFlatListGivenRowNumber(cls, rows:int, data:list, calcManager=None,):
+        if calcManager==None:
+            calcManager = Matrix.CALCULATIONS_MANAGER
         if len(data) % rows != 0:
                 raise ValueError("Matrix from list requires the following assertion to be true len(second parameter) % first parameter == 0")
-        return cls(rows=rows, data=np.array(data).astype(np.float32))
+        return cls(rows=rows, data=np.array(data, dtype=calcManager.getPrecision()), calcManager=calcManager)
 
     
     @classmethod
-    def zeros(cls, rows, columns):
-        return cls(rows=rows, data=np.zeros(rows*columns).astype(np.float32))
+    def zeros(cls, rows:int, columns:int, calcManager=None):
+        if calcManager==None:
+            calcManager = Matrix.CALCULATIONS_MANAGER
+        return cls(rows=rows, data=np.zeros(rows*columns, dtype=calcManager.getPrecision()), calcManager=calcManager)
 
     @classmethod
-    def filledWithValue(cls, rows:int, columns:int, value):
-        return cls(rows=rows, data=np.ndarray(rows*columns).fill(value).astype(np.float32))
+    def filledWithValue(cls, rows:int, columns:int, value, calcManager=None):
+        if calcManager==None:
+            calcManager = Matrix.CALCULATIONS_MANAGER
+        return cls(rows=rows, data=np.empty(rows*columns, dtype=calcManager.getPrecision()).fill(value), calcManager=calcManager)
 
 
     def getNumberOfColumns(self):
@@ -42,10 +62,10 @@ class Matrix:
         return self.rows
 
     def setAtPos(self, x, y, val):
-        self.data[int(x*self.columns+y)] = val
+        self.data[x*self.columns+y] = val
     
     def getAtPos(self, x, y):
-        return self.data[int(x*self.columns+y)]
+        return self.data[x*self.columns+y]
 
     def __str__(self):
         return str(self.data)
@@ -67,60 +87,60 @@ class Matrix:
 
     def add(self, a, in_place = True) -> Any:
         if in_place:
-            pl._addInPlace(self, a)
+            self.calcManager.getCalculator()._addInPlace(self.data, a.getData())
         else:
-            return Matrix(self.rows, pl._add(self, a))
+            return Matrix(self.rows, self.calcManager.getCalculator()._add(self.data, a.getData()), self.calcManager)
 
     def sub(self, a, in_place = True) -> Any:
         if in_place:
-            pl._subInPlace(self, a)
+            self.calcManager.getCalculator()._subInPlace(self.data, a.getData())
         else:
-            return Matrix(self.rows, pl._sub(self, a))
+            return Matrix(self.rows, self.calcManager.getCalculator()._sub(self, a), self.calcManager)
 
-    def addScaler(self, a, in_place = True) -> Any:
+    def addScaler(self, scaler, in_place = True) -> Any:
         if in_place:
-            pl._addScalerInPlace(self, a)
+            self.calcManager.getCalculator()._addScalerInPlace(self.data, scaler)
         else:
-            return Matrix(self.rows, pl._addScaler(self, a))
+            return Matrix(self.rows, self.calcManager.getCalculator()._addScaler(self.data, scaler), self.calcManager)
 
-    def subScaler(self, a, in_place = True) -> Any:
+    def subScaler(self, scaler, in_place = True) -> Any:
         if in_place:
-            pl._subScalerInPlace(self, a)
+            self.calcManager.getCalculator()._subScalerInPlace(self.data, scaler)
         else:
-            return Matrix(self.rows, pl._subScaler(self, a))
+            return Matrix(self.rows, self.calcManager.getCalculator()._subScaler(self.data, scaler), self.calcManager)
 
-    def subScalerFrom(self, a, in_place = True) -> Any:
+    def subScalerFrom(self, scaler, in_place = True) -> Any:
         if in_place:
-            pl._subScalerFromInPlace(self, a)
+            self.calcManager.getCalculator()._subScalerFromInPlace(self.data, scaler)
         else:
-            return Matrix(self.rows, pl._subScalerFrom(self, a))
+            return Matrix(self.rows, self.calcManager.getCalculator()._subScalerFrom(self.data, scaler), self.calcManager)
 
     def scale(self, scaler, in_place = True) -> Any:
         if in_place:
-            pl._scaleInPlace(self, scaler)
+            self.calcManager.getCalculator()._scaleInPlace(self.data, scaler)
         else:
-            return Matrix(self.rows, pl._scale(self, scaler))
+            return Matrix(self.rows, self.calcManager.getCalculator()._scale(self.data, scaler), self.calcManager)
 
     def descale(self, scaler, in_place = True) -> Any:
         if in_place:
-            pl._descale(self, scaler)
+            self.calcManager.getCalculator()._descale(self.data, scaler)
         else:
-            return Matrix(self.rows, pl._descale(self, scaler))
+            return Matrix(self.rows, self.calcManager.getCalculator()._descale(self.data, scaler), self.calcManager)
     
     
     def __getitem__(self, indicies):
-        return self.data[int(self.columns * indicies):int(self.columns*(indicies +1))]
+        return self.data[self.columns * indicies:self.columns*(indicies +1)]
 
     def transpose(self, in_place = True):
         
         bufferList = []
-        for i in range(0, int(self.columns)):
-            for j in range(0, int(self.rows)):
-                bufferList.append(self.data[int((j*self.columns)+i)])
+        for i in range(0, self.columns):
+            for j in range(0, self.rows):
+                bufferList.append(self.data[(j*self.columns)+i])
         
 
         if in_place:
-            self.data = np.array(bufferList).astype(np.float32)
+            self.data = np.array(bufferList, dtype=self.calcManager.getPrecision())
             tmp=self.columns
             self.columns = self.rows
             self.rows = tmp
@@ -128,19 +148,19 @@ class Matrix:
             return Matrix.fromFlatListGivenRowNumber(self.columns, bufferList)
 
     def multiply(self, a):
-        return Matrix(self.rows, pl._multiply(self, a))
+        return Matrix(self.rows, self.calcManager.getCalculator()._multiply(self.data, a.getData(), self.rows, self.columns, a.getNumberOfRows(), a.getNumberOfColumns()), self.calcManager)
 
     def applyCustomFunction(self, func_name, in_place = True):
         if in_place:
-            pl._applyCustomFunctionInPlace(self, func_name)
+            self.calcManager.getCalculator()._applyCustomFunctionInPlace(self.data, func_name)
         else:
-            return Matrix(self.rows, pl._applyCustomFunction(self, func_name))
+            return Matrix(self.rows, self.calcManager.getCalculator()._applyCustomFunction(self.data, func_name), self.calcManager)
 
     def elementWiseMultiply(self, a, in_place = True):
         if in_place:
-            pl._elementWiseMultiplyInPlace(self, a)
+            self.calcManager.getCalculator()._elementWiseMultiplyInPlace(self.data, a.getData())
         else:
-            return Matrix(self.rows, pl._elementWiseMultiply(self, a))
+            return Matrix(self.rows, self.calcManager.getCalculator()._elementWiseMultiply(self.data, a.getData()), self.calcManager)
             
         
 
