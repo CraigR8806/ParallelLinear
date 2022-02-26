@@ -24,6 +24,10 @@ class Matrix:
         Matrix.CALCULATIONS_MANAGER = calculationsManager
 
     @classmethod
+    def loadCustomFunctionToCalculationsManager(cls, function_name:str, func:str):
+        Matrix.CALCULATIONS_MANAGER.getCalculator().loadCustomFunction(function_name, func)
+
+    @classmethod
     def random(cls, rows:int, columns:int, calcManager=None, random_low=0, random_high=1):
         if calcManager==None:
             calcManager = Matrix.CALCULATIONS_MANAGER
