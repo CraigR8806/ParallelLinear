@@ -7,18 +7,25 @@ class NumpyLinear(LinearCalculations):
 
 
     def __init__(self):
-        pass
+        self.customFunctions = {}
 
     @classmethod
     def getLinearCalculator(cls):
         return cls()
     
+    # $i = 1/(1+exp(-$i));
+
     def loadCustomFunction(self, func_name, func):
-        pass
+        if func_name in self.customFunctions:
+            return
+        # .replace("$i = ", "def f(x): return ")
+        interpolatedFunction=func.replace("$i = ", "").replace("$i", "a").replace("exp(", "np.exp(").removesuffix(";")
+        self.customFunctions[func_name] = interpolatedFunction
+        
 
     
     def unloadCustomFunction(self, func_name):
-        pass
+        del self.customFunctions[func_name]
 
     
     def _addInPlace(self, a, b):
@@ -34,7 +41,7 @@ class NumpyLinear(LinearCalculations):
 
     
     def _addScalerInPlace(self, a, scaler):
-        data += scaler
+        a += scaler
 
     
     def _subScalerInPlace(self, a, scaler):
@@ -87,13 +94,12 @@ class NumpyLinear(LinearCalculations):
     
     def _multiply(self, a, b, a_rows:int, a_cols:int, b_rows:int, b_cols:int):
         amd=np.array([a[i:i+a_cols] for i in range(0, len(a), a_cols)], dtype=a.dtype)
-        bmd=np.array([b[i:i+b_cols] for i in range(0, len(b), b_cols)], dtype=a.dtype)
+        bmd=np.array([b[i:i+b_cols] for i in range(0, len(b), b_cols)], dtype=a.dtype).data
         return np.array(amd.dot(bmd).flat, dtype=a.dtype)
 
     
     def _applyCustomFunctionInPlace(self, a, func_name):
-        pass
-
+        a.data = eval(self.customFunctions[func_name]).data
     
     def _applyCustomFunction(self, a, func_name):
-        pass
+        return eval(self.customFunctions[func_name])
