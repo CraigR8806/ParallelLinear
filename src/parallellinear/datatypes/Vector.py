@@ -15,7 +15,7 @@ class Vector(Matrix):
     def random(cls, length:int, calcManager = Matrix.CALCULATIONS_MANAGER, random_low=0, random_high=1):
         if calcManager==None:
             calcManager = Matrix.CALCULATIONS_MANAGER
-        out = cls(data=np.random.rand(length, dtype=calcManager.getPrecision()), calcManager=calcManager)
+        out = cls(data=np.random.rand(length).astype(calcManager.getPrecision()), calcManager=calcManager)
         if random_low != 0 or random_high != 1:
             out.scale(random_high-random_low)
             out.addScaler(random_low)
@@ -36,8 +36,6 @@ class Vector(Matrix):
 
     @classmethod
     def filledWithValue(cls, length:int, value, calcManager = Matrix.CALCULATIONS_MANAGER):
-        if calcManager==None:
-            calcManager = Matrix.CALCULATIONS_MANAGER
         return cls(data=np.empty(length, dtype=calcManager.getPrecision()).fill(value), calcManager=calcManager)
 
 
