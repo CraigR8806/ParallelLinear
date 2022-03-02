@@ -99,7 +99,6 @@ class NumpyLinear(LinearCalculations):
 
     
     def _applyCustomFunctionInPlace(self, a, func_name):
-        print(np.max(a))
         a.data = eval(self.customFunctions[func_name]).data
     
     def _applyCustomFunction(self, a, func_name):
