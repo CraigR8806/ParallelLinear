@@ -64,13 +64,13 @@ class Vector(Matrix):
 
     def add(self, a, in_place = True) -> Any:
         if in_place:
-            self.calcManager.getCalculator()._addInPlace(self.data, a.getData(0))
+            self.calcManager.getCalculator()._addInPlace(self.data, a.getData())
         else:
             return Vector(self.calcManager.getCalculator()._add(self.data, a.getData()), self.calcManager)
 
     def sub(self, a, in_place = True) -> Any:
         if in_place:
-            self.calcManager.getCalculator()._subInPlace(self.data, a.getData)
+            self.calcManager.getCalculator()._subInPlace(self.data, a.getData())
         else:
             return Vector(self.calcManager.getCalculator()._sub(self.data, a.data), self.calcManager)
 
