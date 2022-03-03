@@ -91,6 +91,9 @@ class NumpyLinear(LinearCalculations):
     def _descale(self, a, scaler):
         return a / scaler
 
+    def _sum(self, a):
+        return a.sum()
+
     
     def _multiply(self, a, b, a_rows:int, a_cols:int, b_rows:int, b_cols:int):
         amd=np.array([a[i:i+a_cols] for i in range(0, len(a), a_cols)], dtype=a.dtype)

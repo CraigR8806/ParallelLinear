@@ -349,6 +349,9 @@ class ParallelLinear(LinearCalculations):
         cl.enqueue_copy(self.queue, res_np, res_g)
         return res_np
 
+    def _sum(self, a):
+        return a.sum()
+
     def _applyCustomFunctionInPlace(self, a, func_name):
 
         mf = cl.mem_flags

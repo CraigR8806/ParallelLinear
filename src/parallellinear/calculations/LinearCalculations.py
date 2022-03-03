@@ -94,3 +94,7 @@ class LinearCalculations(ABC):
     @abstractmethod
     def _applyCustomFunction(self, a, func_name):
         pass
+
+    @abstractmethod
+    def _sum(self, a):
+        pass
