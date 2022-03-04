@@ -161,7 +161,7 @@ class Matrix:
             return Matrix(self.rows, self.calcManager.getCalculator()._applyCustomFunction(self.data, func_name), self.calcManager)
 
     def sum(self):
-        return self.calcManager.getCalculator._sum(self.data)
+        return self.calcManager.getCalculator()._sum(self.data)
 
     def elementWiseMultiply(self, a, in_place = True):
         if in_place:
